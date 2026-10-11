@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Maths Magiques">
+<meta name="theme-color" content="#7c4dff">
+<title>Les Maths Magiques</title>
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A6%84%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;font-family:"Chalkboard SE","Comic Sans MS","Arial Rounded MT Bold",system-ui,sans-serif;touch-action:manipulation}
+body{background:linear-gradient(160deg,#ffd6f5 0%,#c9e7ff 55%,#d7ffd9 100%);color:#3b2a6b}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) 14px calc(env(safe-area-inset-bottom) + 10px)}
+.screen.on{display:flex}
+h1{font-size:36px;margin:8px 0 2px;text-align:center;color:#7c4dff;text-shadow:3px 3px 0 #fff}
+.sub{font-size:20px;margin-bottom:10px}
+.btn{border:none;border-radius:26px;font:inherit;font-size:24px;font-weight:bold;color:#fff;padding:16px;margin:7px 0;width:100%;max-width:380px;box-shadow:0 6px 0 rgba(0,0,0,.18);cursor:pointer;display:flex;align-items:center;gap:12px;justify-content:center}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.b1{background:#ff6fb5}.b2{background:#4fb3ff}.b3{background:#33c48d}.b4{background:#ffab2e}.b5{background:#9b7bff}
+.btn .e{font-size:38px}
+.row{display:flex;gap:8px;justify-content:center;margin:6px 0}
+.chip{border:3px solid #7c4dff;background:#fff;border-radius:18px;padding:8px 14px;font:inherit;font-size:20px;font-weight:bold;color:#7c4dff}
+.chip.sel{background:#7c4dff;color:#fff}
+.stars{font-size:24px;font-weight:bold;background:#fff;border-radius:20px;padding:6px 16px;margin:4px}
+.badges{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:380px;margin-top:6px}
+.badge{font-size:30px;background:#fff;border-radius:16px;width:52px;height:52px;display:flex;align-items:center;justify-content:center}
+.badge.lock{filter:grayscale(1);opacity:.3}
+.top{width:100%;max-width:420px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.icon{border:none;background:#fff;border-radius:50%;width:48px;height:48px;font-size:26px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.score{font-size:22px;font-weight:bold;background:#fff;border-radius:18px;padding:6px 12px}
+.bar{width:100%;max-width:420px;height:18px;background:#fff;border-radius:10px;margin:8px 0;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff6fb5,#ffab2e,#33c48d);border-radius:10px;transition:width 1s linear}
+.bar span{position:absolute;right:6px;top:-3px;font-size:16px}
+.combo{height:30px;font-size:22px;font-weight:bold;color:#ff4f9a}
+.level{font-size:18px;color:#7c4dff}
+.q{font-size:58px;font-weight:bold;background:#fff;border-radius:30px;padding:16px 26px;margin:12px 0;min-width:260px;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.1)}
+.q.small{font-size:34px}
+.objs{font-size:38px;line-height:1.2;text-align:center;max-width:340px;word-break:break-all}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:380px;margin-top:10px}
+.ans{border:none;border-radius:50%;aspect-ratio:1;font:inherit;font-size:46px;font-weight:bold;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.ans:nth-child(1){background:#ff6fb5}.ans:nth-child(2){background:#4fb3ff}.ans:nth-child(3){background:#33c48d}.ans:nth-child(4){background:#ffab2e}
+.ans.big{border-radius:30px;aspect-ratio:auto;padding:22px 0;font-size:40px}
+.shake{animation:sh .45s}
+@keyframes sh{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.pop{animation:pp .4s}
+@keyframes pp{50%{transform:scale(1.25)}}
+.mascot{font-size:46px;height:56px}
+#sky{position:relative;width:100%;max-width:420px;flex:1;background:linear-gradient(#bfe6ff,#fff3);border-radius:26px;overflow:hidden;margin-top:6px}
+.balloon{position:absolute;width:84px;height:100px;border-radius:50% 50% 48% 48%;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:bold;color:#fff;box-shadow:inset -8px -10px 0 rgba(0,0,0,.12);text-shadow:2px 2px 0 rgba(0,0,0,.2)}
+.balloon:after{content:"";position:absolute;bottom:-26px;left:41px;width:2px;height:26px;background:#888}
+.boom{animation:bm .3s forwards}
+@keyframes bm{to{transform:scale(1.6);opacity:0}}
+.fx{position:fixed;pointer-events:none;font-size:30px;z-index:50;animation:fl 1.1s ease-out forwards}
+@keyframes fl{to{transform:translate(var(--dx),var(--dy)) rotate(360deg);opacity:0}}
+.big-emoji{font-size:90px;margin:10px 0}
+.msg{font-size:30px;font-weight:bold;text-align:center;margin:10px 0}
+.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);background:#fff;border-radius:30px;padding:20px 26px;font-size:30px;font-weight:bold;text-align:center;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.2);display:none}
+</style>
+</head>
+<body>
+
+<!-- ACCUEIL -->
+<div class="screen on" id="home">
+  <h1>✨ Les Maths Magiques ✨</h1>
+  <div class="stars">⭐ <span id="totalStars">0</span> étoiles</div>
+  <button class="btn b1" data-game="calc"><span class="e">🦄</span>Calculs</button>
+  <button class="btn b2" data-game="balloons"><span class="e">🎈</span>Attrape les ballons</button>
+  <button class="btn b3" data-game="count"><span class="e">🐶</span>Compter & comparer</button>
+  <button class="btn b4" data-game="mult"><span class="e">🚀</span>Bonus : × 2, 5, 10</button>
+  <div class="row" id="durRow">⏱️
+    <button class="chip" data-min="15">15 min</button>
+    <button class="chip sel" data-min="20">20 min</button>
+    <button class="chip" data-min="30">30 min</button>
+  </div>
+  <div class="row"><button class="chip" id="defi">🔥 Défi jusqu'à 100 : non</button><button class="chip" id="muteHome">🔊</button></div>
+  <div class="badges" id="badges"></div>
+</div>
+
+<!-- JEU -->
+<div class="screen" id="game">
+  <div class="top">
+    <button class="icon" id="homeBtn">🏠</button>
+    <div class="score">⭐ <span id="sessStars">0</span></div>
+    <div class="level" id="lvl">Niveau 1</div>
+    <button class="icon" id="mute">🔊</button>
+  </div>
+  <div class="bar"><i id="timeBar"></i><span id="barIcon">🐢</span></div>
+  <div class="combo" id="combo"></div>
+  <div id="area" style="width:100%;display:flex;flex-direction:column;align-items:center;flex:1"></div>
+</div>
+
+<!-- FIN -->
+<div class="screen" id="end">
+  <div class="big-emoji">🏆</div>
+  <div class="msg">Bravo, c'est fini pour aujourd'hui !</div>
+  <div class="stars" style="font-size:30px">⭐ <span id="endStars">0</span> étoiles gagnées</div>
+  <div class="msg" id="endBadge" style="font-size:24px"></div>
+  <button class="btn b5" id="endHome" style="margin-top:20px"><span class="e">🏠</span>Accueil</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var rnd=function(a,b){return a+Math.floor(Math.random()*(b-a+1))};
+var shuffle=function(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a};
+
+// ---------- sauvegarde ----------
+var SAVE_KEY="mathsMagiques_v1";
+var data={stars:0,minutes:20,defi:false,muted:false,best:0,games:0};
+try{var s=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");if(s)for(var k in s)data[k]=s[k]}catch(e){}
+function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(data))}catch(e){}}
+
+var BADGES=[
+ {n:10,e:"🐣",t:"Poussin"},{n:25,e:"🐱",t:"Chaton"},{n:50,e:"🦊",t:"Renard"},{n:100,e:"🐼",t:"Panda"},
+ {n:200,e:"🦄",t:"Licorne"},{n:350,e:"🐉",t:"Dragon"},{n:500,e:"👑",t:"Reine des maths"},{n:800,e:"🌈",t:"Arc-en-ciel"}
+];
+function renderHome(){
+  $("totalStars").textContent=data.stars;
+  var h="";BADGES.forEach(function(b){h+='<div class="badge'+(data.stars>=b.n?'':' lock')+'" title="'+b.t+' ('+b.n+'⭐)">'+b.e+'</div>'});
+  $("badges").innerHTML=h;
+  [].forEach.call(document.querySelectorAll("#durRow .chip"),function(c){c.classList.toggle("sel",+c.dataset.min===data.minutes)});
+  $("defi").textContent="🔥 Défi jusqu'à 100 : "+(data.defi?"oui":"non");
+  $("defi").classList.toggle("sel",data.defi);
+  $("muteHome").textContent=$("mute").textContent=data.muted?"🔇":"🔊";
+}
+
+// ---------- son (Web Audio, démarré au 1er toucher) ----------
+var ac=null;
+function unlock(){
+  if(!ac){try{var AC=window.AudioContext||window.webkitAudioContext;if(AC)ac=new AC()}catch(e){}}
+  if(ac&&ac.state==="suspended")ac.resume();
+}
+document.addEventListener("touchstart",unlock,{passive:true});
+document.addEventListener("click",unlock);
+function tone(f,d,when,type){
+  if(data.muted||!ac)return;
+  try{var t=ac.currentTime+(when||0),o=ac.createOscillator(),g=ac.createGain();
+  o.type=type||"sine";o.frequency.value=f;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.25,t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d+0.05)}catch(e){}
+}
+var sfx={
+  good:function(){tone(660,.12);tone(880,.12,.1);tone(1175,.2,.2)},
+  bad:function(){tone(300,.18,0,"triangle");tone(240,.25,.15,"triangle")},
+  pop:function(){tone(900,.08,0,"square")},
+  up:function(){[523,659,784,1047].forEach(function(f,i){tone(f,.15,i*.1)})},
+  end:function(){[523,659,784,1047,784,1047].forEach(function(f,i){tone(f,.2,i*.15)})}
+};
+function toggleMute(){data.muted=!data.muted;save();renderHome()}
+$("mute").onclick=toggleMute;$("muteHome").onclick=toggleMute;
+
+// ---------- effets ----------
+function confetti(x,y,n){
+  var em=["⭐","🌟","✨","🎉","💖","🦄","🌈"];
+  for(var i=0;i<(n||14);i++){var d=document.createElement("div");d.className="fx";d.textContent=em[rnd(0,em.length-1)];
+    d.style.left=x+"px";d.style.top=y+"px";var a=Math.random()*Math.PI*2,r=rnd(80,180);
+    d.style.setProperty("--dx",Math.cos(a)*r+"px");d.style.setProperty("--dy",Math.sin(a)*r-60+"px");
+    document.body.appendChild(d);setTimeout(function(el){el.remove()}.bind(null,d),1150)}
+}
+function centerConfetti(n){confetti(innerWidth/2,innerHeight/2.6,n)}
+function shake(el){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}
+function toast(t,ms){var e=$("toast");e.innerHTML=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},ms||1200)}
+
+// ---------- état de la séance ----------
+var S=null; // session
+var timerId=null;
+function show(id){[].forEach.call(document.querySelectorAll(".screen"),function(s){s.classList.toggle("on",s.id===id)})}
+
+function startSession(game){
+  if(!S||S.ended){S={start:Date.now(),total:data.minutes*60*1000,stars:0,ended:false}}
+  S.game=game;S.level=1;S.streak=0;S.miss=0;
+  show("game");renderHome();updateHud();
+  clearInterval(timerId);timerId=setInterval(tick,1000);tick();
+  GAMES[game].start();
+}
+function tick(){
+  if(!S)return;var p=Math.min(1,(Date.now()-S.start)/S.total);
+  $("timeBar").style.width=(p*100)+"%";
+  $("barIcon").textContent=p<.33?"🐢":p<.66?"🐰":p<.95?"🐆":"🏁";
+  if(p>=1)endSession();
+}
+function endSession(){
+  if(!S||S.ended)return;S.ended=true;clearInterval(timerId);stopGame();
+  data.games++;save();
+  $("endStars").textContent=S.stars;
+  var nb=BADGES.filter(function(b){return data.stars>=b.n}).pop();
+  $("endBadge").innerHTML=nb?"Ton badge : "+nb.e+" "+nb.t:"Continue pour gagner ton 1er badge 🐣 !";
+  show("end");sfx.end();setTimeout(function(){centerConfetti(30)},100);setTimeout(function(){centerConfetti(30)},700);
+}
+function goHome(){stopGame();clearInterval(timerId);if(S&&S.ended)S=null;renderHome();show("home")}
+$("homeBtn").onclick=goHome;$("endHome").onclick=function(){S=null;goHome()};
+
+function updateHud(){
+  $("sessStars").textContent=S.stars;$("lvl").textContent="Niveau "+S.level;
+  $("combo").textContent=S.streak>=2?"🔥 Combo x"+S.streak+" !":"";
+}
+// Bonne réponse : étoiles + combo + difficulté adaptative
+function right(x,y){
+  S.streak++;S.miss=0;var gain=1+(S.streak>=3?1:0)+(S.streak>=6?1:0);
+  S.stars+=gain;data.stars+=gain;if(S.streak>data.best)data.best=S.streak;save();
+  sfx.good();confetti(x||innerWidth/2,y||innerHeight/2.6,S.streak>=3?20:12);
+  if(S.streak%5===0&&S.level<GAMES[S.game].max){S.level++;sfx.up();toast("🚀 Niveau "+S.level+" !<br>🌟🌟🌟",1300)}
+  else if(S.streak===5||S.streak===10)toast("🔥 Super série !",900);
+  checkBadge(data.stars-gain);updateHud();
+}
+// Mauvaise réponse : petit shake, on réessaie
+function wrong(el){
+  S.streak=0;S.miss++;sfx.bad();if(el)shake(el);
+  if(S.miss>=2&&S.level>1){S.level--;S.miss=0;toast("🐢 On ralentit un peu",900)}
+  updateHud();
+}
+function checkBadge(before){BADGES.forEach(function(b){if(before<b.n&&data.stars>=b.n){setTimeout(function(){toast("Nouveau badge !<br><span style='font-size:70px'>"+b.e+"</span><br>"+b.t,2000);centerConfetti(25)},400)}})}
+
+var stopFns=[];function stopGame(){stopFns.forEach(function(f){f()});stopFns=[]}
+var MASCOTS=["🦄","🐱","🐶","🐼","🦊","🐰","🐨","🐸","🐧","🦁"];
+
+// Générateur de choix multiples
+function choices(ans,spread,min){
+  var set=[ans];var guard=0;
+  while(set.length<4&&guard++<100){var c=ans+rnd(-spread,spread);if(c>=(min||0)&&set.indexOf(c)<0)set.push(c)}
+  var k=1;while(set.length<4){if(set.indexOf(ans+k)<0)set.push(ans+k);k++}
+  return shuffle(set);
+}
+function quizScreen(qHtml,ans,opts,next,cls){
+  var area=$("area");
+  area.innerHTML='<div class="mascot">'+MASCOTS[rnd(0,MASCOTS.length-1)]+'</div><div class="q '+(cls||"")+'" id="qq">'+qHtml+'</div><div class="answers" id="ansBox"></div>';
+  var box=$("ansBox"),locked=false;
+  opts.forEach(function(o){var b=document.createElement("button");b.className="ans"+(typeof o==="string"&&o.length>3?" big":"");b.textContent=o;
+    b.onclick=function(ev){if(locked)return;
+      if(o===ans){locked=true;b.classList.add("pop");var r=b.getBoundingClientRect();right(r.left+r.width/2,r.top+r.height/2);
+        $("qq").innerHTML=qHtml.replace("❓",'<span style="color:#33c48d">'+ans+'</span>');setTimeout(next,750)}
+      else{wrong(b);b.style.opacity=".35";b.disabled=true}};
+    box.appendChild(b)});
+}
+
+// ---------- JEUX ----------
+var GAMES={};
+
+// a) Calculs
+GAMES.calc={max:5,start:function(){this.next()},next:function(){
+  var L=S.level,top=data.defi?[20,40,60,80,100][L-1]:[10,12,15,18,20][L-1],a,b,ans,q;
+  var sub=L>=2&&Math.random()<.45;
+  if(sub){a=rnd(Math.ceil(top/3),top);b=rnd(1,a);ans=a-b;q=a+" − "+b+" = ❓"}
+  else{a=rnd(1,top-1);b=rnd(1,top-a);ans=a+b;q=a+" + "+b+" = ❓"}
+  if(L>=4&&Math.random()<.3&&!sub){q=a+" + ❓ = "+(a+b);ans=b}
+  quizScreen(q,ans,choices(ans,data.defi?10:4),GAMES.calc.next.bind(GAMES.calc));
+}};
+
+// b) Attrape les ballons
+GAMES.balloons={max:5,start:function(){
+  var self=this,area=$("area");
+  area.innerHTML='<div class="q small" id="bq"></div><div id="sky"></div>';
+  var sky=$("sky"),raf=null,last=performance.now(),spawnT=0,balloons=[],ans=0,alive=true;
+  var colors=["#ff6fb5","#4fb3ff","#33c48d","#ffab2e","#9b7bff","#ff5a5a"];
+  function newQ(){var L=S.level,top=data.defi?[20,40,60,80,100][L-1]:[10,12,15,18,20][L-1],a,b;
+    if(L>=2&&Math.random()<.4){a=rnd(2,top);b=rnd(1,a);ans=a-b;$("bq").textContent=a+" − "+b+" = ❓"}
+    else{a=rnd(1,top-1);b=rnd(1,top-a);ans=a+b;$("bq").textContent=a+" + "+b+" = ❓"}
+    balloons.forEach(function(o){o.el.remove()});balloons=[];spawnT=0;spawn(true)}
+  function spawn(forceRight){
+    var W=sky.clientWidth,H=sky.clientHeight,hasRight=balloons.some(function(o){return o.v===ans});
+    var v=(forceRight||!hasRight&&Math.random()<.5)?ans:Math.max(0,ans+rnd(-5,5));
+    if(v===ans&&hasRight)v=ans+rnd(1,4);
+    var el=document.createElement("div");el.className="balloon";el.textContent=v;
+    el.style.background=colors[rnd(0,colors.length-1)];
+    var x=rnd(4,Math.max(5,W-90));el.style.left=x+"px";el.style.top=H+"px";sky.appendChild(el);
+    var o={el:el,v:v,y:H,sp:(32+S.level*10)*(0.85+Math.random()*.3)};balloons.push(o);
+    el.addEventListener("pointerdown",function(ev){ev.preventDefault();if(o.done)return;
+      if(o.v===ans){o.done=true;el.classList.add("boom");sfx.pop();var r=el.getBoundingClientRect();right(r.left+42,r.top+50);setTimeout(newQ,450)}
+      else{wrong(el);o.done=true;el.classList.add("boom");setTimeout(function(){el.remove()},300);balloons=balloons.filter(function(b){return b!==o})}});
+  }
+  function loop(t){if(!alive)return;var dt=Math.min(.05,(t-last)/1000);last=t;spawnT+=dt;
+    if(spawnT>Math.max(.9,1.8-S.level*.15)){spawnT=0;if(balloons.length<6)spawn(false)}
+    balloons=balloons.filter(function(o){if(o.done)return true;o.y-=o.sp*dt;o.el.style.top=o.y+"px";
+      if(o.y<-110){o.el.remove();if(o.v===ans){toast("🎈 Envolé ! On réessaie",800)}return false}return true});
+    if(!balloons.some(function(o){return o.v===ans&&!o.done})&&balloons.length<6&&spawnT>.4)spawn(true);
+    raf=requestAnimationFrame(loop)}
+  newQ();raf=requestAnimationFrame(loop);
+  stopFns.push(function(){alive=false;cancelAnimationFrame(raf)});
+}};
+
+// c) Compter & comparer
+var EMO=["🐶","🐱","🐰","🦄","🐸","🐥","🍓","🌸","⭐","🐞","🍎","🐟"];
+GAMES.count={max:5,start:function(){this.next()},next:function(){
+  var L=S.level,nxt=GAMES.count.next.bind(GAMES.count);
+  var type=rnd(0,L>=2?2:1);
+  if(type===0){ // compter
+    var n=rnd(2,[6,9,12,15,20][L-1]),e=EMO[rnd(0,EMO.length-1)],s="";for(var i=0;i<n;i++)s+=e;
+    quizScreen('<div class="objs">'+s+'</div><div style="font-size:28px">Combien ?</div>',n,choices(n,3,1),nxt,"small");
+  }else if(type===1){ // plus grand
+    var top=[10,20,50,100,100][L-1],a=rnd(0,top),b=rnd(0,top);while(b===a)b=rnd(0,top);
+    var big=Math.random()<.5,ans=big?Math.max(a,b):Math.min(a,b);
+    quizScreen(big?"Le plus <b style='color:#ff4f9a'>GRAND</b> 🐘 ?":"Le plus <b style='color:#4fb3ff'>PETIT</b> 🐭 ?",ans,[a,b],nxt,"small");
+  }else{ // signe
+    var top2=[10,20,50,100,100][L-1],x=rnd(0,top2),y=rnd(0,top2),sg=x>y?">":x<y?"<":"=";
+    quizScreen(x+" ❓ "+y,sg,shuffle(["<","=",">"]),nxt);
+  }
+}};
+
+// d) Tables bonus
+GAMES.mult={max:4,start:function(){this.next()},next:function(){
+  var L=S.level,tables=[[2],[2,10],[2,5,10],[2,5,10]][L-1],t=tables[rnd(0,tables.length-1)],k=rnd(1,L>=3?10:5),ans=t*k;
+  quizScreen(k+" × "+t+" = ❓",ans,choices(ans,t===2?4:t,0).map(function(v){return v}),GAMES.mult.next.bind(GAMES.mult));
+}};
+
+// ---------- accueil ----------
+[].forEach.call(document.querySelectorAll("[data-game]"),function(b){b.onclick=function(){startSession(b.dataset.game)}});
+[].forEach.call(document.querySelectorAll("#durRow .chip"),function(c){c.onclick=function(){data.minutes=+c.dataset.min;save();if(S&&!S.ended)S.total=data.minutes*60000;renderHome()}});
+$("defi").onclick=function(){data.defi=!data.defi;save();renderHome()};
+renderHome();
+window.__MM={data:data,get S(){return S},endSession:endSession};
+})();
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js");}</script>
+</body>
+</html>
